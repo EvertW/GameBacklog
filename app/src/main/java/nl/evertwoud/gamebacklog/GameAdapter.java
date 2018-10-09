@@ -13,6 +13,7 @@ import java.util.List;
 
 public class GameAdapter extends RecyclerView.Adapter<GameAdapter.ViewHolder> {
 
+    private final Context mContext;
     private List<Game> mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
@@ -21,6 +22,7 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.ViewHolder> {
     GameAdapter(Context context, List<Game> data) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
+        this.mContext = context;
     }
 
     void remove(int position){
@@ -44,7 +46,7 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.ViewHolder> {
         Game game = mData.get(position);
         holder.title.setText(game.getTitle());
         holder.platform.setText(game.getPlatform());
-        holder.status.setText(game.getStatusString());
+        holder.status.setText(game.getStatusString(mContext));
         holder.date.setText(game.getDateFormatted());
     }
 

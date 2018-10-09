@@ -6,4 +6,9 @@
     <string name="add_platform">Platform</string>
     <string name="add_notes">Notes</string>
     <string name="add_status">Status</string>
+
+    <string name="status_playing">Playing</string>
+    <string name="status_want_to_play">Want to play</string>
+    <string name="status_stalled">Stalled</string>
+    <string name="status_droppped">Dropped</string>
 </resources>

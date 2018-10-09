@@ -2,6 +2,7 @@ package nl.evertwoud.gamebacklog;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.content.Context;
 import android.support.annotation.NonNull;
 
 import java.io.Serializable;
@@ -13,11 +14,11 @@ import java.util.Date;
 @Entity
 public class Game implements Serializable {
 
-    static String[] statusStrings = new String[]{
-            "Playing",
-            "Want to play",
-            "Stalled",
-            "Dropped"
+    static Integer[] statusStrings = new Integer[]{
+            R.string.status_playing,
+            R.string.status_want_to_play,
+            R.string.status_stalled,
+            R.string.status_droppped
     };
 
     @NonNull
@@ -64,8 +65,8 @@ public class Game implements Serializable {
         status = pStatus;
     }
 
-    public String getStatusString() {
-        return statusStrings[status];
+    public String getStatusString(Context pContext) {
+        return pContext.getString(statusStrings[status]);
     }
 
     public String getNotes() {
@@ -95,7 +96,12 @@ public class Game implements Serializable {
         return dateFormat.format(cal.getTime());
     }
 
-    public static String[] getStatusStrings() {
-        return statusStrings;
+    public static String[] getStatusStrings(Context pContext) {
+        String[] list = new String[statusStrings.length];
+        list[0] = pContext.getString(statusStrings[0]);
+        list[1] = pContext.getString(statusStrings[1]);
+        list[2] = pContext.getString(statusStrings[2]);
+        list[3] = pContext.getString(statusStrings[3]);
+        return list;
     }
 }
