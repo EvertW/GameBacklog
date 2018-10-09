@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Game Backlog Manager</string>
+
+    <!-- Add page-->
+    <string name="add_title">Title</string>
+    <string name="add_platform">Platform</string>
+    <string name="add_notes">Notes</string>
+    <string name="add_status">Status</string>
 </resources>

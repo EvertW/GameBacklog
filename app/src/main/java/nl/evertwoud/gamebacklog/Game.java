@@ -1,9 +1,16 @@
 package nl.evertwoud.gamebacklog;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
+
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
+
+@Entity
 public class Game implements Serializable {
 
     static String[] statusStrings = new String[]{
@@ -13,13 +20,19 @@ public class Game implements Serializable {
             "Dropped"
     };
 
+    @NonNull
+    @PrimaryKey(autoGenerate = true)
+    Integer id;
     String title;
     String platform;
     Integer status;
     String notes;
-    Date date;
+    Long date;
 
-    public Game(String pTitle, String pPlatform, Integer pStatus, String pNotes, Date pDate) {
+    public Game() {
+    }
+
+    public Game(String pTitle, String pPlatform, Integer pStatus, String pNotes, Long pDate) {
         title = pTitle;
         platform = pPlatform;
         status = pStatus;
@@ -64,16 +77,22 @@ public class Game implements Serializable {
     }
 
     public Date getDate() {
-        return date;
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(date);
+        return cal.getTime();
     }
 
     public void setDate(Date pDate) {
-        date = pDate;
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(pDate);
+        date = cal.getTimeInMillis();
     }
 
     public String getDateFormatted() {
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(date);
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        return dateFormat.format(date);
+        return dateFormat.format(cal.getTime());
     }
 
     public static String[] getStatusStrings() {

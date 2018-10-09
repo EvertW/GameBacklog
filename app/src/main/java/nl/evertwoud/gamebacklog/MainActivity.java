@@ -1,26 +1,22 @@
 package nl.evertwoud.gamebacklog;
 
+import android.arch.persistence.room.Room;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import java.lang.reflect.Type;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements GameAdapter.ItemClickListener {
-
+    private static final String DATABASE_NAME = "game_db";
     private static final int NEW_GAME = 1;
     private static final int EDIT_GAME = 2;
 
@@ -30,6 +26,24 @@ public class MainActivity extends AppCompatActivity implements GameAdapter.ItemC
     List<Game> mGames;
     private Game mEditingGame;
 
+    private GameDatabase mGameDatabase;
+    ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(RecyclerView.ViewHolder viewHolder,
+                             int swipeDir) {
+            //Get the swiped item and remove it from the list (async)
+            int position = viewHolder.getAdapterPosition();
+            doAsync(() -> {
+                mGameDatabase.dao().deleteGame(mAdapter.getItem(position));
+                runOnUiThread(() -> mAdapter.remove(position));
+            });
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,24 +53,24 @@ public class MainActivity extends AppCompatActivity implements GameAdapter.ItemC
         mRecyclerView = findViewById(R.id.backlog_recycler);
         mFab = findViewById(R.id.plus_button);
 
-        init();
+        initializeDatabase();
+        getAllGames();
+        mFab.setOnClickListener(v -> goToAddGameActivity());
     }
 
-    private void init() {
-        if (getListFromPreferences() != null && !getListFromPreferences().isEmpty()) {
-            mGames = getListFromPreferences();
-        } else {
-            mGames = new LinkedList<>();
-        }
+    private void initializeDatabase() {
+        mGameDatabase = Room.databaseBuilder(getApplicationContext(),
+                GameDatabase.class, DATABASE_NAME)
+                .fallbackToDestructiveMigration()
+                .build();
+    }
 
-        setUpRecyclerView(mGames);
-
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToAddGameActivity();
-            }
+    private void getAllGames() {
+        doAsync(() -> {
+            mGames = mGameDatabase.dao().getAllGames();
+            runOnUiThread(() -> setUpRecyclerView(mGames));
         });
+
     }
 
     void goToAddGameActivity() {
@@ -70,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements GameAdapter.ItemC
         mAdapter = new GameAdapter(this, games);
         mAdapter.setClickListener(this);
         mRecyclerView.setAdapter(mAdapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
     @Override
@@ -87,18 +103,20 @@ public class MainActivity extends AppCompatActivity implements GameAdapter.ItemC
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode == RESULT_OK) {
-            if (data.getExtras() == null) {
+            if (data == null || data.getExtras() == null) {
                 return;
             }
             Bundle bundle = data.getExtras();
-
             switch (requestCode) {
                 case NEW_GAME:
                     String title = bundle.getString("title");
                     String platform = bundle.getString("platform");
                     String notes = bundle.getString("notes");
                     int status = bundle.getInt("status");
-                    mGames.add(new Game(title, platform, status, notes, new Date()));
+                    doAsync(() -> {
+                        mGameDatabase.dao().addGame(new Game(title, platform, status, notes, System.currentTimeMillis()));
+                        getAllGames();
+                    });
                     break;
                 case EDIT_GAME:
                     String edited_title = bundle.getString("title");
@@ -111,31 +129,16 @@ public class MainActivity extends AppCompatActivity implements GameAdapter.ItemC
                     mEditingGame.setNotes(edited_notes);
                     mEditingGame.setStatus(edited_status);
                     mEditingGame.setDate(new Date());
+                    doAsync(() -> {
+                        mGameDatabase.dao().updateGame(mEditingGame);
+                        getAllGames();
+                    });
                     break;
             }
-            storeListInPreferences(mGames);
-            setUpRecyclerView(mGames);
         }
     }
 
-    void storeListInPreferences(List<Game> pGames) {
-        SharedPreferences appSharedPrefs = PreferenceManager
-                .getDefaultSharedPreferences(this.getApplicationContext());
-        SharedPreferences.Editor prefsEditor = appSharedPrefs.edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(pGames);
-        prefsEditor.putString("GAMES", json);
-        prefsEditor.commit();
-    }
-
-    List<Game> getListFromPreferences() {
-        SharedPreferences appSharedPrefs = PreferenceManager
-                .getDefaultSharedPreferences(this.getApplicationContext());
-        Gson gson = new Gson();
-        String json = appSharedPrefs.getString("GAMES", "");
-        Type type = new TypeToken<List<Game>>() {
-        }.getType();
-        List<Game> games = gson.fromJson(json, type);
-        return games;
+    void doAsync(Runnable pRunnable) {
+        new Thread(pRunnable).start();
     }
 }

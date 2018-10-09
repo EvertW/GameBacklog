@@ -23,6 +23,12 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.ViewHolder> {
         this.mData = data;
     }
 
+    void remove(int position){
+        mData.remove(position);
+        notifyDataSetChanged();
+    }
+
+
     // inflates the row layout from xml when needed
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
