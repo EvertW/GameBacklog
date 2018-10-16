@@ -20,7 +20,6 @@ public class AddActivity extends AppCompatActivity {
     EditText mAddNotes;
     FloatingActionButton mSaveButton;
     Spinner mSpinner;
-    private boolean mEditing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,13 +35,13 @@ public class AddActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        //Fill data when in edit mode
         if (getIntent().getExtras()!=null){
             Bundle bundle = getIntent().getExtras();
             mAddTitle.setText(bundle.getString("title"));
             mAddPlatform.setText(bundle.getString("platform"));
             mAddNotes.setText(bundle.getString("notes"));
             mSpinner.setSelection(bundle.getInt("status"));
-            mEditing = true;
         }
     }
 
@@ -55,22 +54,22 @@ public class AddActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    //Initialization method
     private void init() {
+        //Set up the spinner
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, Game.getStatusStrings(this));
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSpinner.setAdapter(adapter);
 
-        mSaveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = getIntent();
-                intent.putExtra("title",mAddTitle.getText().toString());
-                intent.putExtra("platform",mAddPlatform.getText().toString());
-                intent.putExtra("notes", mAddNotes.getText().toString());
-                intent.putExtra("status", mSpinner.getSelectedItemPosition());
-                setResult(RESULT_OK, intent);
-                finish();
-            }
+        //Add click listener which returns all the entered data.
+        mSaveButton.setOnClickListener(v -> {
+            Intent intent = getIntent();
+            intent.putExtra("title",mAddTitle.getText().toString());
+            intent.putExtra("platform",mAddPlatform.getText().toString());
+            intent.putExtra("notes", mAddNotes.getText().toString());
+            intent.putExtra("status", mSpinner.getSelectedItemPosition());
+            setResult(RESULT_OK, intent);
+            finish();
         });
     }
 }

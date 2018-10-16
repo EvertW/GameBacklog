@@ -91,6 +91,10 @@ public class Game implements Serializable {
         date = cal.getTimeInMillis();
     }
 
+    /**
+     * Gets the date as a formatted string
+     * @return formatted date string
+     */
     public String getDateFormatted() {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(date);
@@ -98,6 +102,12 @@ public class Game implements Serializable {
         return dateFormat.format(cal.getTime());
     }
 
+
+    /**
+     * Returns a list of the available status strings.
+     * @param pContext a context
+     * @return the list of statuses
+     */
     public static String[] getStatusStrings(Context pContext) {
         String[] list = new String[statusStrings.length];
         list[0] = pContext.getString(statusStrings[0]);
