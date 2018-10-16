@@ -1,4 +1,4 @@
-package nl.evertwoud.gamebacklog;
+package nl.evertwoud.gamebacklog.data.models;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
@@ -9,6 +9,8 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+
+import nl.evertwoud.gamebacklog.R;
 
 
 @Entity
@@ -23,12 +25,12 @@ public class Game implements Serializable {
 
     @NonNull
     @PrimaryKey(autoGenerate = true)
-    Integer id;
-    String title;
-    String platform;
-    Integer status;
-    String notes;
-    Long date;
+    public Integer id;
+    public String title;
+    public String platform;
+    public Integer status;
+    public String notes;
+    public Long date;
 
     public Game() {
     }

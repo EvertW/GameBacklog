@@ -1,4 +1,4 @@
-package nl.evertwoud.gamebacklog;
+package nl.evertwoud.gamebacklog.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,9 +7,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+
+import nl.evertwoud.gamebacklog.R;
+import nl.evertwoud.gamebacklog.data.models.Game;
 
 public class AddActivity extends AppCompatActivity {
 

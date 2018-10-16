@@ -1,15 +1,17 @@
-package nl.evertwoud.gamebacklog;
+package nl.evertwoud.gamebacklog.ui.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
+
+import nl.evertwoud.gamebacklog.R;
+import nl.evertwoud.gamebacklog.data.models.Game;
 
 public class GameAdapter extends RecyclerView.Adapter<GameAdapter.ViewHolder> {
 
@@ -19,13 +21,13 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.ViewHolder> {
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor
-    GameAdapter(Context context, List<Game> data) {
+    public GameAdapter(Context context, List<Game> data) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
         this.mContext = context;
     }
 
-    void remove(int position){
+    public void remove(int position){
         mData.remove(position);
         notifyDataSetChanged();
     }
@@ -80,12 +82,12 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.ViewHolder> {
     }
 
     // convenience method for getting data at click position
-    Game getItem(int id) {
+    public Game getItem(int id) {
         return mData.get(id);
     }
 
     // allows clicks events to be caught
-    void setClickListener(ItemClickListener itemClickListener) {
+    public void setClickListener(ItemClickListener itemClickListener) {
         this.mClickListener = itemClickListener;
     }
 

@@ -1,4 +1,4 @@
-package nl.evertwoud.gamebacklog;
+package nl.evertwoud.gamebacklog.ui.activities;
 
 import android.arch.persistence.room.Room;
 import android.content.Intent;
@@ -14,6 +14,11 @@ import android.view.View;
 
 import java.util.Date;
 import java.util.List;
+
+import nl.evertwoud.gamebacklog.ui.adapters.GameAdapter;
+import nl.evertwoud.gamebacklog.data.database.GameDatabase;
+import nl.evertwoud.gamebacklog.R;
+import nl.evertwoud.gamebacklog.data.models.Game;
 
 public class MainActivity extends AppCompatActivity implements GameAdapter.ItemClickListener {
     private static final String DATABASE_NAME = "game_db";
